@@ -21,3 +21,26 @@ while p < len(line):
     p = new_p + 1
 
 print(distance)
+
+
+lookup = {}
+for name, locations in letters.items():
+    start, end = locations
+    distance = end - start
+    lookup[start] = (name, end, distance)
+    lookup[end] = (name, start, distance)
+
+p = 0
+visited = set()
+while p < len(line):
+    info = lookup[p]
+    visited.add(info[0])
+    p = info[1] + 1
+
+not_visited = []
+for char in line:
+    if char not in visited:
+        not_visited.append(char)
+        visited.add(char)
+
+print("".join(not_visited))
