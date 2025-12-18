@@ -1,6 +1,12 @@
 #!/usr/bin/python3
 from collections import defaultdict
 
+class Info:
+    def __init__(self, name, destination, distance):
+        self.name = name
+        self.destination = destination
+        self.distance = distance
+
 f = open('input.txt')
 line = f.read().strip()
 
@@ -12,17 +18,22 @@ lookup = {}
 for name, locations in letters.items():
     start, end = locations
     distance = end - start
-    lookup[start] = (name, end, distance)
-    lookup[end] = (name, start, distance)
+    lookup[start] = Info(name, end, distance)
+    lookup[end] = Info(name, start, distance)
 
-p = 0
+pos = 0
 distance = 0
+power_distance = 0
 visited = set()
-while p < len(line):
-    info = lookup[p]
-    visited.add(info[0])
-    distance += info[2]
-    p = info[1] + 1
+while pos < len(line):
+    info = lookup[pos]
+    visited.add(info.name)
+    distance += info.distance
+    if info.name.isupper():
+        power_distance -= info.distance
+    else:
+        power_distance += info.distance
+    pos = info.destination + 1
 
 not_visited = []
 for char in line:
@@ -32,3 +43,4 @@ for char in line:
 
 print(distance)
 print("".join(not_visited))
+print(power_distance)
