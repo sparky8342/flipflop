@@ -34,3 +34,21 @@ for bird in birds:
         count += 1
 
 print(count)
+
+
+birds = []
+for line in lines:
+    vx, vy = line.split(",")
+    birds.append(Bird(0, 0, int(vx), int(vy)))
+
+count = 0
+for _ in range(1000):
+    for bird in birds:
+        bird.x = (bird.x + bird.vx * 3600) % size
+        bird.y = (bird.y + bird.vy * 3600) % size
+
+    for bird in birds:
+        if start <= bird.x <= end and start <= bird.y <= end:
+            count += 1
+
+print(count)
