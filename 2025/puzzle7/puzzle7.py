@@ -7,16 +7,15 @@ lines = f.read().splitlines()
 
 @functools.cache
 def path_count(dimensions):
-    if any(val < 0 for val in dimensions):
-        return 0
     if all(val == 0 for val in dimensions):
         return 1
 
     total = 0
     for i in range(len(dimensions)):
-        d_copy = list(dimensions)
-        d_copy[i] -= 1
-        total += path_count(tuple(d_copy))
+        if dimensions[i] > 0:
+            d_copy = list(dimensions)
+            d_copy[i] -= 1
+            total += path_count(tuple(d_copy))
     return total
 
 part1, part2, part3 = 0, 0, 0
