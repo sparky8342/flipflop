@@ -2,17 +2,21 @@
 
 WALL_SIZE = 100
 
+def move_robot(robot, move):
+    if move == '<':
+        robot -= 1
+    elif move == '>':
+        robot += 1
+    robot %= WALL_SIZE
+    return robot
+
 moves = list(open('input.txt').read().strip())
 
 wall = [0] * WALL_SIZE
 robot = 0
 
 for move in moves:
-    if move == '<':
-        robot -= 1
-    elif move == '>':
-        robot += 1
-    robot %= WALL_SIZE
+    robot = move_robot(robot, move)
     wall[robot] += 1
 
 max_heat = wall[0]
@@ -31,11 +35,7 @@ part2 = 0
 rev_moves = list(reversed(moves))
 
 for i in range(0, len(moves)):
-    if moves[i] == '<':
-        robot -= 1
-    elif moves[i] == '>':
-        robot += 1
-    robot %= WALL_SIZE
+    robot = move_robot(robot, moves[i])
 
     if rev_moves[i] == '<':
         wall_segment -= 1
@@ -50,11 +50,7 @@ wall = [0] * WALL_SIZE
 wall_shift = 0
 
 for i in range(0, len(moves)):
-    if moves[i] == '<':
-        robot -= 1
-    elif moves[i] == '>':
-        robot += 1
-    robot %= WALL_SIZE
+    robot = move_robot(robot, moves[i])
 
     if rev_moves[i] == '<':
         wall_shift += 1
