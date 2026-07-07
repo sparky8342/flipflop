@@ -46,4 +46,31 @@ for i in range(0, len(moves)):
     if robot == wall_segment:
        part2 += 1
 
-print(f"{part1}\n{part2}")
+wall = [0] * WALL_SIZE
+wall_shift = 0
+
+for i in range(0, len(moves)):
+    if moves[i] == '<':
+        robot -= 1
+    elif moves[i] == '>':
+        robot += 1
+    robot %= WALL_SIZE
+
+    if rev_moves[i] == '<':
+        wall_shift += 1
+    elif rev_moves[i] == '>':
+        wall_shift -= 1
+
+    wall[(robot + wall_shift) % WALL_SIZE] += 1
+
+max_heat = wall[0]
+max_robot = 0
+
+for i, heat in enumerate(wall):
+    if heat > max_heat:
+        max_heat = heat
+        max_robot = i
+
+part3 = (max_robot + 1 + wall_shift) % WALL_SIZE * max_heat
+
+print(f"{part1}\n{part2}\n{part3}")
