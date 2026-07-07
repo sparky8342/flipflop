@@ -60,6 +60,6 @@ for i in range(0, len(moves)):
     wall[(robot + wall_shift) % WALL_SIZE] += 1
 
 heat, robot = max_heat(wall)
-part3 = (robot + 1 + wall_shift) % WALL_SIZE * heat
+part3 = ((robot + wall_shift) % WALL_SIZE + 1) * heat
 
 print(f"{part1}\n{part2}\n{part3}")
