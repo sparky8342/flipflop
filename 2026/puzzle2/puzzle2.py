@@ -10,6 +10,18 @@ def move_robot(robot, move):
     robot %= WALL_SIZE
     return robot
 
+def max_heat(wall):
+    max_h = wall[0]
+    max_robot = 0
+
+    for i, heat in enumerate(wall):
+        if heat > max_h:
+            max_h = heat
+            max_robot = i
+
+    return max_h, max_robot
+
+
 moves = list(open('input.txt').read().strip())
 
 wall = [0] * WALL_SIZE
@@ -19,15 +31,8 @@ for move in moves:
     robot = move_robot(robot, move)
     wall[robot] += 1
 
-max_heat = wall[0]
-max_robot = 0
-
-for i, heat in enumerate(wall):
-    if heat > max_heat:
-        max_heat = heat
-        max_robot = i
-
-part1 = (max_robot + 1) * max_heat
+heat, robot = max_heat(wall)
+part1 = (robot + 1) * heat
 
 robot = 0
 wall_segment = 0
@@ -59,14 +64,7 @@ for i in range(0, len(moves)):
 
     wall[(robot + wall_shift) % WALL_SIZE] += 1
 
-max_heat = wall[0]
-max_robot = 0
-
-for i, heat in enumerate(wall):
-    if heat > max_heat:
-        max_heat = heat
-        max_robot = i
-
-part3 = (max_robot + 1 + wall_shift) % WALL_SIZE * max_heat
+heat, robot = max_heat(wall)
+part3 = (robot + 1 + wall_shift) % WALL_SIZE * heat
 
 print(f"{part1}\n{part2}\n{part3}")
