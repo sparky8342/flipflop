@@ -41,12 +41,7 @@ rev_moves = list(reversed(moves))
 
 for i in range(0, len(moves)):
     robot = move_robot(robot, moves[i])
-
-    if rev_moves[i] == '<':
-        wall_segment -= 1
-    elif rev_moves[i] == '>':
-        wall_segment += 1
-    wall_segment %= WALL_SIZE
+    wall_segment = move_robot(wall_segment, rev_moves[i])
 
     if robot == wall_segment:
        part2 += 1
