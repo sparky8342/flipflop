@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import re
+import string
 
 def password_score(password):
     upper, lower, digit = False, False, False
@@ -33,7 +34,7 @@ def password_score2(password):
 
     if re.search("[0-9]", password):
         score += 1
-        if re.search("^[A-Za-z]*7[A-Za-z]*$", password):
+        if re.search("7", password) and not re.search("[0-68-9]", password):
             score += 7
 
     max_l = 0
@@ -74,3 +75,15 @@ for password in passwords:
         max_password = password
 
 print(max_password)
+
+best_sum = 0
+for ch in string.ascii_lowercase + string.ascii_uppercase + string.digits:
+    sum = 0
+    for password in passwords:
+        password += ch
+        sum += password_score2(password)
+
+    if sum > best_sum:
+        best_sum = sum
+
+print(best_sum)
