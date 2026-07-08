@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import re
 
 def password_score(password):
     upper, lower, digit = False, False, False
@@ -21,14 +22,55 @@ def password_score(password):
     return score * len(password)
 
 
+def password_score2(password):
+    score = 0
+
+    if re.search("[A-Z]", password):
+        score += 1
+
+    if re.search("[a-z]", password):
+        score += 1
+
+    if re.search("[0-9]", password):
+        score += 1
+        if re.search("^[A-Za-z]*7[A-Za-z]*$", password):
+            score += 7
+
+    max_l = 0
+    matches = re.findall("(.)(\\1+)", password)
+    for match in matches:
+        if len(match[1]) > max_l:
+            max_l = len(match[1])
+
+    max_l += 1
+    if max_l >= 3:
+        score += max_l * max_l
+
+    if re.search("(red|green|blue)", password):
+        score *= 3
+
+    return score * len(password)
+
+passwords = open('input.txt').read().splitlines()
+
 max_score = 0
 max_password = ""
 
-f = open('input.txt')
-for line in f.read().splitlines():
-    score = password_score(line)
+for password in passwords:
+    score = password_score(password)
     if score > max_score:
         max_score = score
-        max_password = line
+        max_password = password
+
+print(max_password)
+
+max_score = 0
+max_password = ""
+
+for password in passwords:
+    score = password_score2(password)
+    if score > max_score:
+        max_score = score
+        max_password = password
 
 print(max_password)
