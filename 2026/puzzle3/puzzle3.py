@@ -13,10 +13,11 @@ def password_score(password, additional_rules):
 
     if re.search("[0-9]", password):
         score += 1
-        if additional_rules and re.search("7", password) and not re.search("[0-68-9]", password):
-            score += 7
 
     if additional_rules:
+        if re.search("7", password) and not re.search("[0-68-9]", password):
+            score += 7
+
         max_l = 0
         matches = re.findall("(.)(\\1+)", password)
         for match in matches:
@@ -32,38 +33,32 @@ def password_score(password, additional_rules):
 
     return score * len(password)
 
+def best_password(passwords, additional_rules):
+    max_score = 0
+    max_password = ""
+    for password in passwords:
+        score = password_score(password, additional_rules)
+        if score > max_score:
+            max_score = score
+            max_password = password
+    return max_password
+
+
 passwords = open('input.txt').read().splitlines()
 
-max_score = 0
-max_password = ""
+part1 = best_password(passwords, False)
+part2 = best_password(passwords, True)
 
-for password in passwords:
-    score = password_score(password, False)
-    if score > max_score:
-        max_score = score
-        max_password = password
-
-print(max_password)
-
-max_score = 0
-max_password = ""
-
-for password in passwords:
-    score = password_score(password, True)
-    if score > max_score:
-        max_score = score
-        max_password = password
-
-print(max_password)
-
-best_sum = 0
+best_total = 0
 for ch in string.ascii_lowercase + string.ascii_uppercase + string.digits:
-    sum = 0
+    total = 0
     for password in passwords:
         password += ch
-        sum += password_score(password, True)
+        total += password_score(password, True)
 
-    if sum > best_sum:
-        best_sum = sum
+    if total > best_total:
+        best_total = total
 
-print(best_sum)
+part3 = best_total
+
+print(f"{part1}\n{part2}\n{part3}")
