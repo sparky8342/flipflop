@@ -2,55 +2,42 @@
 
 flower = open('input.txt').read().splitlines()
 
-cut = len(flower) - 400 - 1
-
-leaves = 0
-for i in range(cut, 3, -1):
-    if flower[i][0] == 'o' or (len(flower[i]) == 5 and flower[i][4] == 'o'):
-        leaves += 1
-
-part1 = leaves
-
-swaps = 0
-last_side = ""
-for i in range(len(flower) - 2, 2, -1):
-    side = ""
+leaves = []
+for i in range(len(flower)-2, 2, -1):
     if flower[i][0] == 'o':
-        side = "L"
+        leaves.append("L")
     elif len(flower[i]) == 5 and flower[i][4] == 'o':
-        side = "R"
+        leaves.append("R")
     else:
-        continue
+        leaves.append("")
 
-    if last_side == "":
-        last_side = side
-    elif last_side != side:
-        swaps += 1
-        last_side = side
+part1 = 0
+for i in range(400, len(leaves)):
+    if leaves[i] != "":
+        part1 += 1
 
-part2 = swaps
+leaves = [x for x in leaves if x != ""]
 
-workers = 0
+part2 = 0
+side = leaves[0]
+for leaf in leaves:
+    if side != leaf:
+        part2 += 1
+        side = leaf
+
+part3 = 0
 while True:
-    last_side = ""
+    side = leaves[0]
+    for i, leaf in enumerate(leaves):
+        if side != leaf:
+            leaves[i] = ""
+            side = leaf
 
-    for i in range(len(flower) - 2, 2, -1):
-        side = ""
-        if flower[i][0] == 'o':
-            side = "L"
-        elif len(flower[i]) == 5 and flower[i][4] == 'o':
-            side = "R"
-        else:
-            continue
+    part3 += 1
 
-        if last_side != side:
-            flower[i] = "  |"
-            last_side = side
-
-    if last_side == "":
+    leaves[0] = ""
+    leaves = [x for x in leaves if x != ""]
+    if len(leaves) == 0:
         break
-    workers += 1
-
-part3 = workers
 
 print(f"{part1}\n{part2}\n{part3}")
