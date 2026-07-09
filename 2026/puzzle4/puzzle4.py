@@ -9,7 +9,7 @@ for i in range(cut, 3, -1):
     if flower[i][0] == 'o' or (len(flower[i]) == 5 and flower[i][4] == 'o'):
         leaves += 1
 
-print(leaves)
+part1 = leaves
 
 swaps = 0
 last_side = ""
@@ -28,7 +28,7 @@ for i in range(len(flower) - 2, 2, -1):
         swaps += 1
         last_side = side
 
-print(swaps)
+part2 = swaps
 
 workers = 0
 while True:
@@ -51,4 +51,6 @@ while True:
         break
     workers += 1
 
-print(workers)
+part3 = workers
+
+print(f"{part1}\n{part2}\n{part3}")
