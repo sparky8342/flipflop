@@ -21,7 +21,6 @@ def distinct_streets(grid):
             return len(visited)
         visited.add(loc)
 
-
 def distinct_streets_with_turns(grid):
     turns = 0
     x, y = 0, 0
@@ -62,45 +61,32 @@ def distinct_streets_with_turns(grid):
             continue
         visited.add(loc)
 
+def find_best_change(grid, find_path):
+    max_amount = 0
+
+    for y in range(1, size - 1):
+        for x in range(1, size - 1):
+
+            val = grid[y][x]
+            for direction in ['v', '<', '^', '>']:
+                if val == direction:
+                    continue
+                grid[y][x] = direction
+                amount = find_path(grid)
+                max_amount = max(amount, max_amount)
+
+            grid[y][x] = val
+
+    return max_amount
+
 
 grid = []
 for line in open('input.txt').read().splitlines():
     grid.append(list(line))
+size = len(grid)
 
 part1 = distinct_streets(grid)
-
-size = len(grid)
-max_amount = 0
-
-for y in range(1, size - 1):
-    for x in range(1, size - 1):
-
-        val = grid[y][x]
-        for direction in ['v', '<', '^', '>']:
-            if val == direction:
-                continue
-            grid[y][x] = direction
-            amount = distinct_streets(grid)
-            max_amount = max(amount, max_amount)
-
-        grid[y][x] = val
-
-part2 = max_amount
-
-max_amount = 0
-for y in range(1, size - 1):
-    for x in range(1, size - 1):
-
-        val = grid[y][x]
-        for direction in ['v', '<', '^', '>']:
-            if val == direction:
-                continue
-            grid[y][x] = direction
-            amount = distinct_streets_with_turns(grid)
-            max_amount = max(amount, max_amount)
-
-        grid[y][x] = val
-
-part3 = max_amount
+part2 = find_best_change(grid, distinct_streets)
+part3 = find_best_change(grid, distinct_streets_with_turns)
 
 print(f"{part1}\n{part2}\n{part3}")
