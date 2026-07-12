@@ -85,31 +85,25 @@ def remove_prime_outputs(outputs):
     for name in to_delete:
         del(outputs[name])
 
+def find_number(grid, start_x, start_y, outputs):
+    cl = clone(grid)
+    rotate(cl, start_x, start_y, "L", set(), outputs)
+    return get_num(cl)
+
 
 dirs = [[0, 1], [0, -1], [1, 0], [-1, 0]]
 
-orig_grid = []
+grid = []
 for line in open('input.txt').read().splitlines():
-    orig_grid.append(list(line))
-height = len(orig_grid)
-width = len(orig_grid[0])
-start_x, start_y = find_start(orig_grid)
-
-grid = clone(orig_grid)
-visited = set()
-rotate(grid, start_x, start_y, "L", visited, {})
-part1 = get_num(grid)
-
-grid = clone(orig_grid)
+    grid.append(list(line))
+height = len(grid)
+width = len(grid[0])
+start_x, start_y = find_start(grid)
 outputs = find_outputs(grid)
-visited = set()
-rotate(grid, start_x, start_y, "L", visited, outputs)
-part2 = get_num(grid)
 
-grid = clone(orig_grid)
+part1 = find_number(grid, start_x, start_y, {})
+part2 = find_number(grid, start_x, start_y, outputs)
 remove_prime_outputs(outputs)
-visited = set()
-rotate(grid, start_x, start_y, "L", visited, outputs)
-part3 = get_num(grid)
+part3 = find_number(grid, start_x, start_y, outputs)
 
 print(f"{part1}\n{part2}\n{part3}")
