@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from sympy import isprime
 
 def clone(grid):
     cl = [row[:] for row in grid]
@@ -33,8 +34,10 @@ def rotate(grid, x, y, direction, visited, outputs):
             elif (val == "*" or val == "0") and direction == "R":
                 grid[ny][nx] = "1"
             elif len(outputs) and 'a' <= val <= 'z':
-                ox, oy = outputs[val.upper()]
-                rotate(grid, ox, oy, direction, visited, outputs)
+                output = val.upper()
+                if output in outputs:
+                    ox, oy = outputs[output]
+                    rotate(grid, ox, oy, direction, visited, outputs)
 
 def get_num(grid):
     digits = []
@@ -53,6 +56,35 @@ def find_outputs(grid):
                 outputs[grid[y][x]] = (x, y)
     return outputs
 
+def remove_prime_outputs(outputs):
+    to_delete = []
+
+    for output, location in outputs.items():
+        queue = [location]
+        visited = set()
+        visited.add(location)
+
+        while(len(queue) > 0):
+            loc = queue.pop(0)
+            x, y = loc
+
+            for dir in dirs:
+                nx = x + dir[0]
+                ny = y + dir[1]
+                if in_bounds(nx, ny) and grid[ny][nx] == "3":
+                    new_loc = (nx, ny)
+                    if new_loc in visited:
+                        continue
+                    queue.append(new_loc)
+                    visited.add(new_loc)
+
+        group = len(visited) - 1
+        if isprime(group):
+            to_delete.append(output)
+
+    for name in to_delete:
+        del(outputs[name])
+
 
 dirs = [[0, 1], [0, -1], [1, 0], [-1, 0]]
 
@@ -66,10 +98,18 @@ start_x, start_y = find_start(orig_grid)
 grid = clone(orig_grid)
 visited = set()
 rotate(grid, start_x, start_y, "L", visited, {})
-print(get_num(grid))
+part1 = get_num(grid)
 
 grid = clone(orig_grid)
 outputs = find_outputs(grid)
 visited = set()
 rotate(grid, start_x, start_y, "L", visited, outputs)
-print(get_num(grid))
+part2 = get_num(grid)
+
+grid = clone(orig_grid)
+remove_prime_outputs(outputs)
+visited = set()
+rotate(grid, start_x, start_y, "L", visited, outputs)
+part3 = get_num(grid)
+
+print(f"{part1}\n{part2}\n{part3}")
