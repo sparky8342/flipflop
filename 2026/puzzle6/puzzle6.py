@@ -11,25 +11,19 @@ def in_bounds(x, y):
 
 def rotate(grid, x, y):
     direction = grid[y][x]
-    opposite = ""
-    if direction == "L":
-        opposite = "R"
-    elif direction == "R":
-        opposite = "L"
+    opposite = "L" if direction == "R" else "R"
 
     for dir in dirs:
         nx = x + dir[0]
         ny = y + dir[1]
         if in_bounds(nx, ny):
-            if grid[ny][nx] == "#":
+            val = grid[ny][nx]
+            if val == "#":
                 grid[ny][nx] = opposite
                 rotate(grid, nx, ny)
-            elif grid[ny][nx] == "*":
-                if direction == "R":
-                    grid[ny][nx] = "1"
-                elif direction == "L":
-                    grid[ny][nx] = "0"
-            elif grid[ny][nx] == "0" and direction == "R":
+            elif val == "*" and direction == "L":
+                grid[ny][nx] = "0"
+            elif (val == "*" or val == "0") and direction == "R":
                 grid[ny][nx] = "1"
 
 def get_num(grid):
