@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from collections import deque
 from sympy import isprime
 
 class Machine:
@@ -68,12 +69,12 @@ class Machine:
         to_delete = []
 
         for output, location in self.outputs.items():
-            queue = [location]
+            queue = deque([location])
             visited = set()
             visited.add(location)
 
             while(len(queue) > 0):
-                loc = queue.pop(0)
+                loc = queue.popleft()
                 x, y = loc
 
                 for dir in dirs:
