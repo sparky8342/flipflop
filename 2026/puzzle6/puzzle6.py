@@ -9,7 +9,12 @@ class Machine:
         self.width = len(grid[0])
         self.find_start()
         self.outputs = {}
+        self.prime_outputs = {}
+        self.find_outputs()
+        self.find_prime_outputs()
         self.digit_grid = []
+        self.use_outputs = False
+        self.use_prime_outputs = False
 
     def reset_digit_grid(self):
         self.digit_grid = []
@@ -44,11 +49,16 @@ class Machine:
                     self.digit_grid[ny][nx] = "0"
                 elif (val == "*" or self.digit_grid[ny][nx] == "0") and direction == "R":
                     self.digit_grid[ny][nx] = "1"
-                elif len(self.outputs) and 'a' <= val <= 'z':
+                elif 'a' <= val <= 'z':
                     output = val.upper()
-                    if output in self.outputs:
-                        ox, oy = self.outputs[output]
-                        self.rotate(ox, oy, direction, visited)
+                    if self.use_outputs:
+                        if output in self.outputs:
+                            ox, oy = self.outputs[output]
+                            self.rotate(ox, oy, direction, visited)
+                    if self.use_prime_outputs:
+                        if output in self.prime_outputs:
+                            ox, oy = self.prime_outputs[output]
+                            self.rotate(ox, oy, direction, visited)
 
     def get_num(self):
         digits = []
@@ -65,8 +75,8 @@ class Machine:
                 if 'A' <= self.grid[y][x] <= 'Z':
                     self.outputs[self.grid[y][x]] = (x, y)
 
-    def remove_prime_outputs(self):
-        to_delete = []
+    def find_prime_outputs(self):
+        primes_found = []
 
         for output, location in self.outputs.items():
             queue = deque([location])
@@ -89,9 +99,10 @@ class Machine:
 
             group = len(visited) - 1
             if isprime(group):
-                to_delete.append(output)
+                primes_found.append(output)
 
-        for name in to_delete:
+        for name in primes_found:
+            self.prime_outputs[name] = self.outputs[name]
             del(self.outputs[name])
 
     def find_number(self):
@@ -109,9 +120,10 @@ for line in open('input.txt').read().splitlines():
 machine = Machine(grid)
 
 part1 = machine.find_number()
-machine.find_outputs()
+machine.use_outputs = True
+machine.use_prime_outputs = True
 part2 = machine.find_number()
-machine.remove_prime_outputs()
+machine.use_prime_outputs = False
 part3 = machine.find_number()
 
 print(f"{part1}\n{part2}\n{part3}")
