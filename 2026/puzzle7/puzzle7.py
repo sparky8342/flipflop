@@ -26,7 +26,7 @@ for i in range(0, len(directions) // 2):
         sushi_i += 1
         sushi_x, sushi_y = sushi[sushi_i]
 
-print(eaten)
+part1 = eaten
 
 snake = [(0, 0)]
 sushi_i = 0
@@ -42,7 +42,6 @@ for i in range(0, len(directions)):
             y -= 1
         case '<':
             x -= 1
-
     if sushi_x == x and sushi_y == y:
         sushi_i += 1
         sushi_x, sushi_y = sushi[sushi_i]
@@ -53,4 +52,38 @@ for i in range(0, len(directions)):
             break
         snake.append((x, y))
 
-print(len(snake) + 1)
+part2 = len(snake) + 1
+
+snake = [(0, 0)]
+sushi_i = 0
+sushi_x, sushi_y = sushi[sushi_i]
+bites = 0
+for i in range(0, len(directions)):
+    x, y = snake[-1]
+    match directions[i]:
+        case '^':
+            y += 1
+        case '>':
+            x += 1
+        case 'v':
+            y -= 1
+        case '<':
+            x -= 1
+    if sushi_x == x and sushi_y == y:
+        sushi_i += 1
+        if sushi_i == len(sushi):
+            sushi_x, sushi_y = -1, -1
+        else:
+            sushi_x, sushi_y = sushi[sushi_i]
+        snake.append((x, y))
+    else:
+        snake.pop(0)
+        if (x, y) in snake:
+            pos = snake.index((x, y))
+            snake = snake[pos+2:]
+            bites += 1
+        snake.append((x, y))
+
+part3 = len(snake) * bites
+
+print(f"{part1}\n{part2}\n{part3}")
