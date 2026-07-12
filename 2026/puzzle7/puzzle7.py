@@ -31,8 +31,8 @@ part1 = eaten
 snake = [(0, 0)]
 sushi_i = 0
 sushi_x, sushi_y = sushi[sushi_i]
+x, y = 0, 0
 for i in range(0, len(directions)):
-    x, y = snake[-1]
     match directions[i]:
         case '^':
             y += 1
@@ -57,9 +57,9 @@ part2 = len(snake) + 1
 snake = [(0, 0)]
 sushi_i = 0
 sushi_x, sushi_y = sushi[sushi_i]
+x, y = 0, 0
 bites = 0
 for i in range(0, len(directions)):
-    x, y = snake[-1]
     match directions[i]:
         case '^':
             y += 1
