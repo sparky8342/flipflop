@@ -8,7 +8,8 @@ for i in range(2, len(lines)):
     sushi.append((int(x), int(y)))
 
 x, y = 0, 0
-sushi_x, sushi_y = sushi.pop(0)
+sushi_i = 0
+sushi_x, sushi_y = sushi[sushi_i]
 eaten = 0
 for i in range(0, len(directions) // 2):
     match directions[i]:
@@ -22,6 +23,34 @@ for i in range(0, len(directions) // 2):
             x -= 1
     if sushi_x == x and sushi_y == y:
         eaten += 1
-        sushi_x, sushi_y = sushi.pop(0)
+        sushi_i += 1
+        sushi_x, sushi_y = sushi[sushi_i]
 
 print(eaten)
+
+snake = [(0, 0)]
+sushi_i = 0
+sushi_x, sushi_y = sushi[sushi_i]
+for i in range(0, len(directions)):
+    x, y = snake[-1]
+    match directions[i]:
+        case '^':
+            y += 1
+        case '>':
+            x += 1
+        case 'v':
+            y -= 1
+        case '<':
+            x -= 1
+
+    if sushi_x == x and sushi_y == y:
+        sushi_i += 1
+        sushi_x, sushi_y = sushi[sushi_i]
+        snake.append((x, y))
+    else:
+        snake.pop(0)
+        if (x, y) in snake:
+            break
+        snake.append((x, y))
+
+print(len(snake) + 1)
