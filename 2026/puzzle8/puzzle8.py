@@ -34,9 +34,7 @@ def get_count(pair, generation):
         return 2
 
     count = 0
-    new_group = [pair[0]]
-    new_group.extend(rules[pair])
-    new_group.append(pair[1])
+    new_group = [pair[0]] + rules[pair] + [pair[1]]
     for i in range(0, len(new_group) - 1):
         count += get_count(new_group[i] + new_group[i+1], generation - 1)
     count -= len(new_group) - 2
