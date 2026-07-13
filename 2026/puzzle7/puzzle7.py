@@ -32,8 +32,8 @@ snake = [(0, 0)]
 sushi_i = 0
 sushi_x, sushi_y = sushi[sushi_i]
 x, y = 0, 0
-for i in range(0, len(directions)):
-    match directions[i]:
+for direction in directions:
+    match direction:
         case '^':
             y += 1
         case '>':
@@ -59,8 +59,8 @@ sushi_i = 0
 sushi_x, sushi_y = sushi[sushi_i]
 x, y = 0, 0
 bites = 0
-for i in range(0, len(directions)):
-    match directions[i]:
+for direction in directions:
+    match direction:
         case '^':
             y += 1
         case '>':
