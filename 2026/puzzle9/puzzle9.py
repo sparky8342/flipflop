@@ -41,7 +41,6 @@ while(len(queue) > 0):
             queue.append((nx, ny, distance + 1))
             visited.add(new_loc)
 
-print(part1)
 
 part2 = 0
 queue = [(0, start[0], start[1])]
@@ -79,4 +78,51 @@ while(len(queue) > 0):
                 heapq.heappush(queue, (new_distance, nx, ny))
                 visited[new_loc] = new_distance
 
-print(part2)
+
+part3 = 0
+queue = [(0, start[0], start[1], False)]
+visited = {}
+visited[start] = 0
+
+while(len(queue) > 0):
+    distance, x, y, from_portal = heapq.heappop(queue)
+
+    if x == end[0] and y == end[1]:
+        part3 = distance
+        break
+
+    wall_neighbour = False
+    for dir in dirs:
+        nx = x + dir[0]
+        ny = y + dir[1]
+        if grid[ny][nx] == "#":
+            wall_neighbour = True
+        elif grid[ny][nx] != "#":
+            new_loc = (nx, ny)
+            if new_loc not in visited or visited[new_loc] > distance + 1:
+                heapq.heappush(queue, (distance + 1, nx, ny, False))
+                visited[new_loc] = distance + 1
+
+    if wall_neighbour:
+        for dir in dirs:
+            nx = x + dir[0]
+            ny = y + dir[1]
+
+            if grid[ny][nx] != "#":
+                if grid[ny + dir[1]][nx + dir[0]] == "#":
+                    continue
+
+                while grid[ny + dir[1]][nx + dir[0]] != "#":
+                    nx += dir[0]
+                    ny += dir[1]
+
+                new_loc = (nx, ny)
+                new_distance = distance + 2
+                if from_portal == False:
+                    new_distance += 1
+                if new_loc not in visited or visited[new_loc] > new_distance:
+                    heapq.heappush(queue, (new_distance, nx, ny, True))
+                    visited[new_loc] = new_distance
+
+
+print(f"{part1}\n{part2}\n{part3}")
