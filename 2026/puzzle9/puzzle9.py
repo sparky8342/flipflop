@@ -24,8 +24,7 @@ visited = set()
 visited.add(start)
 
 while(len(queue) > 0):
-    entry = queue.popleft()
-    x, y, distance = entry[0], entry[1], entry[2]
+    x, y, distance = queue.popleft()
 
     if x == end[0] and y == end[1]:
         part1 = distance
@@ -48,9 +47,7 @@ visited = {}
 visited[start] = 0
 
 while(len(queue) > 0):
-    entry = heapq.heappop(queue)
-
-    distance, x, y = entry[0], entry[1], entry[2]
+    distance, x, y = heapq.heappop(queue)
 
     if x == end[0] and y == end[1]:
         part2 = distance
