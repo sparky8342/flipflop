@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import re
 
 class Instruction:
     def __init__(self, id, args):
@@ -24,29 +23,17 @@ class VM:
                 self.labels[token.id] = len(self.program)
 
     def parse_line(self, line):
-        # TODO a cleaner version of this
-        if line[0:2] == "ba":
-            ins = 0
-            pos = 2
-            while line[pos] == "n" and line[pos+1] == "a":
-                ins += 1
-                pos += 2
+        parts = line.split("ne")
 
+        if parts[0][0:2] == "ba":
+            ins = (len(parts[0]) - 2) // 2
             args = []
-            while pos < len(line):
-                pos += 2
-                arg = 0
-                while pos < len(line) and line[pos] == "n" and line[pos+1] == "a":
-                    arg += 1
-                    pos += 2
-                    if pos >= len(line):
-                        break
-                args.append(arg)
-
+            for part in parts[1:]:
+                args.append(len(part) // 2)
             return Instruction(ins, args)
 
-        elif line[0:2] == "be":
-            return Label((len(line) - 2) / 2)
+        elif parts[0][0:2] == "be":
+            return Label((len(parts[0]) - 2) // 2)
 
     def run(self):
         while self.program_counter < len(self.program):
