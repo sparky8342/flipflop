@@ -35,8 +35,19 @@ class VM:
         elif parts[0][0:2] == "be":
             return Label((len(parts[0]) - 2) // 2)
 
+    def set_register(self, register, value):
+        self.registers[register] = value
+
+    def reset(self):
+        self.registers = [0] * 16
+        self.program_counter = 0
+
     def run(self):
+        instruction_count = -1
         while self.program_counter < len(self.program):
+            instruction_count += 1
+            if instruction_count > 5000000:
+                return -1
             instruction = self.program[self.program_counter]
             match instruction.id:
                 case 0:
@@ -72,10 +83,21 @@ class VM:
                 
             self.program_counter += 1
 
+        return 0
+
 
 lines = open('input.txt').read().splitlines()
 
 vm = VM()
 vm.load_program(lines)
 vm.run()
-print(vm.registers[0])
+part1 = vm.registers[0]
+
+part2 = 0
+for val in range(0, 100):
+    vm.reset()
+    vm.set_register(0, val)
+    if vm.run() == -1:
+        part2 += 1
+
+print(f"{part1}\n{part2}")
