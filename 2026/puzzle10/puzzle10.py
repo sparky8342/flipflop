@@ -38,6 +38,9 @@ class VM:
     def set_register(self, register, value):
         self.registers[register] = value
 
+    def get_register(self, register):
+        return self.registers[register]
+
     def reset(self):
         self.registers = [0] * 16
         self.program_counter = 0
@@ -91,7 +94,19 @@ lines = open('input.txt').read().splitlines()
 vm = VM()
 vm.load_program(lines)
 vm.run()
-part1 = vm.registers[0]
+part1 = vm.get_register(0)
+
+def is_double(results):
+    if len(results) // 2 == 1:
+        return False
+
+    half = len(results) // 2
+    for i in range(0, half):
+        if results[i] != results[i + half]:
+            return False
+
+    return True
+
 
 part2 = 0
 for val in range(0, 100):
@@ -100,4 +115,40 @@ for val in range(0, 100):
     if vm.run() == -1:
         part2 += 1
 
-print(f"{part1}\n{part2}")
+
+part3 = 0
+for r1 in range(0, 16):
+    r0 = 0
+
+    results = []
+    looping = 0
+
+    while True:
+        vm.reset()
+        vm.set_register(0, r0)
+        vm.set_register(1, r1)
+        result = vm.run()
+        val = vm.get_register(0)
+
+        if result == -1:
+            looping += 1
+            results.append(-1)
+        else:
+            results.append(val)
+
+        if len(results) > 10 and is_double(results):
+            results = results[:len(results) // 2]
+            looping //= 2
+
+            amount = 65536 // len(results) * looping
+            for i in range(0, 65536 % len(results)):
+                if results[i] == -1:
+                    amount += 1
+            break
+
+        r0 += 1
+
+    part3 += amount
+
+
+print(f"{part1}\n{part2}\n{part3}")
