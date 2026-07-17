@@ -155,25 +155,6 @@ class Card3D:
 
         return lines
 
-    def rotate_forward(self):
-        new_layers = []
-        new_marks = []
-        for i in range(0, 125, 25):
-            rows = []
-            mark = []
-            for j in range(i, i + 25, 5):
-                rows.append([0, 0, 0, 0, 0])
-                mark.append([False, False, False, False, False])
-            new_layers.append(rows)
-            new_marks.append(mark)
-
-        for z in range(0, 5):
-            for y in range(0, 5):
-                for x in range(0, 5):
-                    new_layers[4 - y][4 - z][x] = self.layers[z][y][x]
-
-        self.layers = new_layers
-
 
 data = open('input.txt').read().splitlines()
 
