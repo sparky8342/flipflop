@@ -24,7 +24,6 @@ class Tree:
         self.alive = True
         self.sprouts = { self.start : '00' }
         self.stems = set()
-        self.max_height = 1
 
     def add_sprout(self, sprouts, loc, id, other_trees):
         if id == 'XX':
@@ -52,20 +51,19 @@ class Tree:
             self.add_sprout(new_sprouts, (x - 1, y), dna.left, other_trees)
             self.add_sprout(new_sprouts, (x + 1, y), dna.right, other_trees)
             if self.add_sprout(new_sprouts, (x, y + 1), dna.top, other_trees):
-                self.max_height = max(self.max_height, y + 1)
+                global max_height
+                max_height = max(max_height, y + 1)
 
         self.sprouts = new_sprouts
         self.age += 1
 
-    def energy_check(self, other_trees, other_max_height):
+    def energy_check(self, other_trees):
         if self.age < 5:
             return True
 
         if self.age == 100:
             self.alive = False
             return False
-
-        scan_height = max(self.max_height, other_max_height)
 
         energy_produced = 0 
         for loc in self.stems:
@@ -78,7 +76,7 @@ class Tree:
 
             multiplier = 3
 
-            for ny in range(y + 1, scan_height + 1):
+            for ny in range(y + 1, max_height + 1):
                 above = (x, ny)
                 stem = False
 
@@ -139,11 +137,13 @@ for i in range(0, len(data), 3):
     tree = Tree(len(trees), configuration)
     trees.append(tree)
 
+max_height = 1
+
 total_mass = 0
 for tree in trees:
     while True:
         tree.grow([])
-        if not tree.energy_check({}, 0):
+        if not tree.energy_check({}):
             break
 
     total_mass += tree.mass()
@@ -159,11 +159,9 @@ def run_sim(trees):
 
         for tree in trees:
             if tree.alive:
-                tree.energy_check(trees, max_height)
+                tree.energy_check(trees)
 
-
-max_height = 200
-
+max_height = 1
 x = 0
 for tree in trees:
     tree.start = (x, 1)
@@ -197,6 +195,7 @@ for _ in range(0, 2):
         new_trees[i].reset()
 
     trees = new_trees
+    max_height = 1
     run_sim(trees)
 
 total_mass = 0
