@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import copy
 
 class DNA:
     def __init__(self, id, left, top, right):
@@ -109,9 +108,16 @@ class Tree:
     def mass(self):
         return len(self.stems) + len(self.sprouts)
 
+    def next_generation(self):
+        new_trees = []
+        for loc in self.sprouts.keys():
+            tree = Tree(-1, self.configuration)
+            tree.start = loc
+            new_trees.append(tree)
+        return new_trees
+
 
 data = open('input.txt').read().splitlines()
-#data = open('example2.txt').read().splitlines()
 
 trees = []
 for i in range(0, len(data), 3):
@@ -145,6 +151,17 @@ for tree in trees:
 print(total_mass)
 
 
+def run_sim(trees):
+    while any(tree.alive for tree in trees):
+        for tree in trees:
+            if tree.alive:
+                tree.grow(trees)
+
+        for tree in trees:
+            if tree.alive:
+                tree.energy_check(trees, max_height)
+
+
 max_height = 200
 
 x = 0
@@ -153,14 +170,34 @@ for tree in trees:
     tree.reset()
     x += 10
 
-while any(tree.alive for tree in trees):
-    for tree in trees:
-        if tree.alive:
-            tree.grow(trees)
+run_sim(trees)
 
+total_mass = 0
+for tree in trees:
+    total_mass += tree.mass()
+
+print(total_mass)
+
+for _ in range(0, 2):
+    new_trees = []
     for tree in trees:
-        if tree.alive:
-            tree.energy_check(trees, max_height)
+        new_trees += tree.next_generation()
+
+    new_trees = sorted(new_trees, key=lambda t : (t.start[0], -t.start[1]))
+    pos = 0
+    while pos < len(new_trees) - 1:
+        if new_trees[pos].start[0] == new_trees[pos+1].start[0]:
+            new_trees.pop(pos+1)
+        else:
+            pos += 1
+
+    for i in range(0, len(new_trees)):
+        new_trees[i].id = i
+        new_trees[i].start = (new_trees[i].start[0], 1)
+        new_trees[i].reset()
+
+    trees = new_trees
+    run_sim(trees)
 
 total_mass = 0
 for tree in trees:
