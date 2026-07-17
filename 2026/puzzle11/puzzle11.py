@@ -23,36 +23,42 @@ class Tree:
     def reset(self):
         self.age = 0
         self.alive = True
-        self.parts = { self.start : Part('00', self.id) }
+        self.sprouts = { self.start : '00' }
+        self.stems = set()
         self.max_height = 1
 
-    def add_sprout(self, parts, loc, id):
+    def add_sprout(self, sprouts, loc, id, other_trees):
         if id == 'XX':
             return False
-        if loc in parts and (parts[loc].id == '#' or int(parts[loc].id) > int(id)):
+        if loc in self.stems:
             return False
-        parts[loc] = Part(id, self.id)
+        if loc in sprouts and int(sprouts[loc]) > int(id):
+            return False
+        for tree in other_trees:
+            if loc in tree.stems or loc in tree.sprouts:
+                return False
+        sprouts[loc] = id
         return True
 
-    def grow(self):
-        new_parts = copy.deepcopy(self.parts)
+    def grow(self, other_trees):
+        new_sprouts = {}
 
-        for loc, part in self.parts.items():
+        for loc, id in self.sprouts.items():
             x, y = loc
 
-            if part.id != '#':
-                new_parts[loc].id = '#'
-                dna = self.configuration[part.id]
+            self.stems.add(loc)
 
-                self.add_sprout(new_parts, (x - 1, y), dna.left)
-                self.add_sprout(new_parts, (x + 1, y), dna.right)
-                if self.add_sprout(new_parts, (x, y + 1), dna.top):
-                    self.max_height = max(self.max_height, y + 1)
+            dna = self.configuration[id]
 
-        self.parts = new_parts
+            self.add_sprout(new_sprouts, (x - 1, y), dna.left, other_trees)
+            self.add_sprout(new_sprouts, (x + 1, y), dna.right, other_trees)
+            if self.add_sprout(new_sprouts, (x, y + 1), dna.top, other_trees):
+                self.max_height = max(self.max_height, y + 1)
+
+        self.sprouts = new_sprouts
         self.age += 1
 
-    def energy_check(self, other_parts, other_max_height):
+    def energy_check(self, other_trees, other_max_height):
         if self.age < 5:
             return True
 
@@ -63,27 +69,37 @@ class Tree:
         scan_height = max(self.max_height, other_max_height)
 
         energy_produced = 0 
-        for loc, part in self.parts.items():
+        for loc in self.stems:
             x, y = loc
 
-            if part.id == '#':
-                height = y
+            height = y
 
-                if height > 10:
-                    height = 10
+            if height > 10:
+                height = 10
 
-                multiplier = 3
+            multiplier = 3
 
-                for ny in range(y + 1, scan_height + 1):
-                    above = (x, ny)
-                    if (above in self.parts and self.parts[above].id == '#') or (above in other_parts and other_parts[above].id == '#'):
-                        multiplier -= 1
-                        if multiplier == 0:
+            for ny in range(y + 1, scan_height + 1):
+                above = (x, ny)
+                stem = False
+
+                if above in self.stems:
+                    stem = True
+
+                if stem == False:
+                    for tree in other_trees:
+                        if above in tree.stems:
+                            stem = True
                             break
 
-                energy_produced += height * multiplier
+                if stem:
+                    multiplier -= 1
+                    if multiplier == 0:
+                        break
 
-        energy_needed = len(self.parts) * 3
+            energy_produced += height * multiplier
+
+        energy_needed = (len(self.stems) + len(self.sprouts)) * 3
         if energy_produced < energy_needed:
             self.alive = False
             return False
@@ -91,10 +107,11 @@ class Tree:
             return True
 
     def mass(self):
-        return len(self.parts)
+        return len(self.stems) + len(self.sprouts)
 
 
 data = open('input.txt').read().splitlines()
+#data = open('example2.txt').read().splitlines()
 
 trees = []
 for i in range(0, len(data), 3):
@@ -119,7 +136,7 @@ for i in range(0, len(data), 3):
 total_mass = 0
 for tree in trees:
     while True:
-        tree.grow()
+        tree.grow([])
         if not tree.energy_check({}, 0):
             break
 
@@ -128,8 +145,7 @@ for tree in trees:
 print(total_mass)
 
 
-max_height = 0
-global_parts = {}
+max_height = 200
 
 x = 0
 for tree in trees:
@@ -140,26 +156,11 @@ for tree in trees:
 while any(tree.alive for tree in trees):
     for tree in trees:
         if tree.alive:
-            tree.grow()
-
-            to_delete = []
-            for loc, part in tree.parts.items():
-                if loc in global_parts:
-                    if tree.id != global_parts[loc].tree_id:
-                        to_delete.append(loc)
-                        continue
-                    elif global_parts[loc].id == part.id:
-                        continue
-
-                global_parts[loc] = part
-                max_height = max(max_height, loc[1])
-
-            for loc in to_delete:
-                del(tree.parts[loc])
+            tree.grow(trees)
 
     for tree in trees:
         if tree.alive:
-            tree.energy_check(global_parts, max_height)
+            tree.energy_check(trees, max_height)
 
 total_mass = 0
 for tree in trees:
